@@ -3,7 +3,7 @@
 
 Descripción
 ----------------------------------------
-Software para la administración de un consultorio odontologico.
+Software para la administración de consultorio odontologico.
 
 Funcionalidades
 ----------------------------------------
