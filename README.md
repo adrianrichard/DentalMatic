@@ -17,7 +17,7 @@ Funcionalidades
 
 Instalación
 ----------------------------------------
-1. Clonar este repositorio   
+1. Clonar este repositorio  - https://github.com/adrianrichard/DentalMatic.git
 2. Ejecutar main.py
 
 
