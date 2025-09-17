@@ -6,8 +6,25 @@ class Conexion():
     # Variable de clase para rastrear todas las instancias
     _instancias = []
     
-    def __init__(self, ruta_bd='./bd/consultorioMyM.sqlite3'):
-        self.ruta_bd = ruta_bd
+    def __init__(self, ruta_bd=None):
+        # Obtener la ruta base del directorio de bd (un nivel superior al script actual)
+        if ruta_bd is None:
+            BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            BD_DIR = os.path.join(BASE_DIR, 'bd')
+            
+            # Crear la carpeta bd si no existe
+            if not os.path.exists(BD_DIR):
+                try:
+                    os.makedirs(BD_DIR)
+                    messagebox.showinfo(f"Carpeta 'bd' creada en: {BD_DIR}")
+                except OSError as e:
+                    messagebox.showerror("Error", f"No se pudo crear la carpeta 'bd': {e}")
+                    return
+            
+            self.ruta_bd = os.path.join(BD_DIR, 'consultorioMyM.sqlite3')
+        else:
+            self.ruta_bd = ruta_bd
+            
         self.db = None  # Inicializar explícitamente como None
         self.cur = None  # Inicializar explícitamente como None
         Conexion._instancias.append(self)
@@ -34,7 +51,7 @@ class Conexion():
             if not self.cur:
                 self.conectar()
                 self.obtener_cursor()
-            
+
             self.cur.execute('SELECT nombre_usuario, pass_usuario, tipo_usuario FROM usuarios WHERE nombre_usuario = ? AND pass_usuario = ?', (username, password))
             registro = self.cur.fetchone()
             return registro
@@ -170,9 +187,17 @@ class Conexion():
         """
         
         try:
+            # Asegurarse de que el directorio existe
+            directorio = os.path.dirname(self.ruta_bd)
+            if not os.path.exists(directorio):
+                os.makedirs(directorio)
+
             # Conectar a la base de datos (se crea automáticamente si no existe)
             conexion = sqlite3.connect(self.ruta_bd)
             cursor = conexion.cursor()
+            
+            # Habilitar claves foráneas
+            cursor.execute("PRAGMA foreign_keys = ON")
             
             # Ejecutar el script SQL completo
             cursor.executescript(sql_script)
@@ -184,11 +209,11 @@ class Conexion():
             """)
             
             # Confirmar los cambios
-            conexion.commit()
+            conexion.commit()            
 
         except sqlite3.Error as e:
-            messagebox.showerror("Error", f"Error al crear tabla de usuarios: {e}")
+            messagebox.showerror("Error", f"Error al crear la base de datos: {e}")
         finally:
-        # Cerrar la conexión
+            # Cerrar la conexión
             if conexion:
                 conexion.close()

@@ -6,6 +6,7 @@ from tkinter import  StringVar, Frame
 import os
 import sys
 import subprocess
+import time
 from modulos.modulo_paciente import Paciente
 from modulos.modulo_usuario import Usuario
 from modulos.modulo_odontologo import Odontologo
@@ -522,21 +523,53 @@ class MasterPanel:
             pass
 
     def abrir_ayuda_chm(self):
-        # Ruta fija de tu archivo CHM
-        chm_path = r".\util\AyudaMyM.chm"
+        # Obtener la ruta absoluta del archivo CHM
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        util_dir = os.path.join(os.path.dirname(base_dir), 'util')
+        chm_path = os.path.join(util_dir, 'AyudaMyM.chm')
         
         if not os.path.exists(chm_path):
-            messagebox.showerror("Error", "El archivo de ayuda no se encuentra en la ubicación esperada.")
+            messagebox.showerror("Error", 
+                f"El archivo de ayuda no se encuentra en la ubicación esperada:\n{chm_path}")
             return
 
         try:
             if sys.platform == "win32":
+                # Windows - método nativo
                 os.startfile(chm_path)
+                
+            elif sys.platform == "darwin":
+                # macOS - intentar con aplicaciones disponibles
+                try:
+                    subprocess.Popen(["open", chm_path])
+                except:
+                    # Alternativa para macOS
+                    subprocess.Popen(["qlmanage", "-p", chm_path])
+                    
             else:
-                # Métodos alternativos para otros SO
-                subprocess.Popen(["hh", chm_path])
+                # Linux y otros sistemas
+                try:
+                    # Intentar con xdg-open (estándar en Linux)
+                    subprocess.Popen(["xdg-open", chm_path])
+                except FileNotFoundError:
+                    # Alternativas para Linux
+                    try:
+                        subprocess.Popen(["kchmviewer", chm_path])
+                    except FileNotFoundError:
+                        try:
+                            subprocess.Popen(["chmsee", chm_path])
+                        except FileNotFoundError:
+                            messagebox.showwarning(
+                                "Advertencia", 
+                                "No se encontró un visor CHM compatible. "
+                                "Instale kchmviewer o chmsee."
+                            )
+                            return
+                            
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo abrir la ayuda: {str(e)}")
+
+        time.sleep(0.5)  # Pequeña pausa para evitar errores de apertura múltiple
 
     def widgets(self):
         self.imagen_usuario = utl.leer_imagen('usuario_icono.png', (38, 38))
@@ -553,8 +586,8 @@ class MasterPanel:
         self.logo = utl.leer_imagen('logo1.png', (400, 400))
 
         try:
-            self.imagen_inicio = PhotoImage(file ='./imagenes/home-removebg-preview.png')
-            self.imagen_menu = PhotoImage(file ='./imagenes/menu4-removebg-preview.png')
+            self.imagen_inicio = utl.leer_imagen('home.png', (35, 35))
+            self.imagen_menu = utl.leer_imagen('menu4.png', (38, 38))
             self.bt_inicio = Button(self.frame_inicio, image= self.imagen_inicio, bg= self.color_fondo1, activebackground= 'white', bd= 0, command= self.menu_lateral)
             self.bt_cerrar = Button(self.frame_inicio, image= self.imagen_menu, bg= self.color_fondo1, activebackground= 'white', bd= 0, command= self.menu_lateral)
         except:

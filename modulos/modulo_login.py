@@ -48,8 +48,12 @@ class Login:
                     MasterPanel(usuario[2])
             else:
                 """Si usuario y/o contraseña son incorrectos"""
+                self.usuario.delete(0, tk.END)
+                self.password.delete(0, tk.END)
                 messagebox.showerror("Advertencia", "Usuario o contraseña incorrectos", parent= self.frame_login)
         else:
+            self.usuario.delete(0, tk.END)
+            self.password.delete(0, tk.END)
             db.crear_bd_login()
             messagebox.showwarning("Ingreso", "Base de datos creada\nIntente ingresar nuevamente", parent= self.frame_login)
 

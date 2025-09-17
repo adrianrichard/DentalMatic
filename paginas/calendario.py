@@ -3,7 +3,7 @@ from functools import partial
 from tkinter import *
 import tkinter as tk
 from tkinter import  messagebox
-from paginas.datehandler.datehandler import DateHandler as dH
+from paginas.datehandler import DateHandler as dH
 from paginas.daytoplevel import DayTopWindow
 import util.config as utl
 from bd.conexion import Conexion
