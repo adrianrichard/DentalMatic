@@ -115,7 +115,8 @@ class Odontologo:
             self.matricula_valida.config(fg= "green", text= "Válido")
             self.entry_matricula.config(bg= "green")
             matricula = True
-
+        # datos = self.matricula.get(), self.apellido_odontologo.get().upper(), self.nombre_odontologo.get().upper()
+        # print(datos)
         if apellido and nombre and matricula:
             datos = self.matricula.get(), self.apellido_odontologo.get().upper(), self.nombre_odontologo.get().upper()
             if self.verificar_matricula_existente(self.matricula.get()):
@@ -129,11 +130,11 @@ class Odontologo:
                 self.miCursor.execute("INSERT INTO Odontologos VALUES(?,?,?)", (datos))
                 self.miConexion.commit()
                 if self.master_panel_ref:  # Si tenemos referencia al panel principal
-                    self.master_panel_ref.mostrar_odontologos()
-                messagebox.showinfo("GUARDAR", "Guardado exitosamente", parent= self.frame_odontologo)                
-                self.frame_odontologo.destroy()
+                    self.master_panel_ref.mostrar_odontologos()                               
                 self.frame_odontologo.grab_release()
+                messagebox.showinfo("GUARDAR", "Guardado exitosamente", parent= self.frame_odontologo) 
                 self.frame_odontologo.grab_set()
+                self.frame_odontologo.destroy()
             except:
                 self.frame_odontologo.grab_release()
                 messagebox.showinfo("GUARDAR", "No se ha podido guardar el odontólogo", parent= self.frame_odontologo)

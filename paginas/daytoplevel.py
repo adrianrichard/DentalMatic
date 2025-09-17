@@ -9,8 +9,7 @@ from tkinter import Button
 from paginas.datehandler import DateHandler
 from bd.conexion import Conexion
 import re
-fuenteb= utl.definir_fuente_bold()
-fuenten= utl.definir_fuente()
+
 class DayTopWindow(Toplevel):
 
     def __init__(self, dia: int, mes: int, anio: int):
@@ -54,15 +53,15 @@ class DayTopWindow(Toplevel):
 
     def crear_botones_cambio_fecha(self):
         """ Crea botones para cambiar fecha """
-        Button(self, text= ">", command= self.avanzar_dia,fg= 'white', font = fuenteb, bg= '#1F704B', bd= 2, borderwidth= 2, width= 5).grid(row= 0, column= 2)
-        Button(self, text= "<", command= self.retroceder_dia, fg= 'white', font = fuenteb, bg= '#1F704B', bd= 2, borderwidth= 2, width= 5).grid(row= 0, column= 0)
+        Button(self, text= ">", command= self.avanzar_dia,fg= 'white', font = self.fuenteb, bg= '#1F704B', bd= 2, borderwidth= 2, width= 5).grid(row= 0, column= 2)
+        Button(self, text= "<", command= self.retroceder_dia, fg= 'white', font = self.fuenteb, bg= '#1F704B', bd= 2, borderwidth= 2, width= 5).grid(row= 0, column= 0)
         Button(self, text= "Salir", font= self.fuenteb, fg= 'white', bg= "orange", width= 8, command= self.destroy).grid(row= 0, column= 3, pady= (5,5))
 
     def crear_lista_turnos(self):
         estilo_tabla2 = ttk.Style(self)
         estilo_tabla2.theme_use("alt")
-        estilo_tabla2.configure("TablaTurnos.Treeview", font= fuenten, foreground= 'black', rowheight= 20)
-        estilo_tabla2.configure('TablaTurnos.Treeview.Heading', background= '#1F704B', foreground= 'white', padding= 3, font= fuenteb)
+        estilo_tabla2.configure("TablaTurnos.Treeview", font= self.fuenten, foreground= 'black', rowheight= 20)
+        estilo_tabla2.configure('TablaTurnos.Treeview.Heading', background= '#1F704B', foreground= 'white', padding= 3, font= self.fuenteb)
         self.frame_tabla = ttk.Frame(self)
         self.frame_tabla.grid(column= 0, columnspan= 4, row= 2, sticky= 'nsew')
         self.tabla_turnos = ttk.Treeview(self.frame_tabla, columns= ("Horario", "Paciente", "Prestacion", "Odontologo"), show= 'headings', height= 25, selectmode ='browse', style="TablaTurnos.Treeview")
@@ -111,12 +110,12 @@ class DayTopWindow(Toplevel):
                 if(current_time.strftime("%H:%M") == self.turnos_dados[self.j][0] and self.j < len(self.turnos_dados)):
                     
                     self.tabla_turnos.insert("", "end", values=(current_time.strftime("%H:%M"), self.turnos_dados[self.j][1], self.turnos_dados[self.j][4], self.turnos_dados[self.j][2]+", "+self.turnos_dados[self.j][3]), tags=('anotado',))
-                    self.tabla_turnos.tag_configure('anotado', font= fuenteb, background="green")
+                    self.tabla_turnos.tag_configure('anotado', font= self.fuenteb, background="green")
                     if(self.j+1 < len(self.turnos_dados)):
                         self.j=self.j+1
                 else:
                     self.tabla_turnos.insert(parent= '', index= 'end', values=(current_time.strftime("%H:%M"), '', '', ''))
-            self.tabla_turnos.tag_configure('anotado', font= fuenteb, background= "green")
+            self.tabla_turnos.tag_configure('anotado', font= self.fuenteb, background= "green")
 
     def editar_turno(self, event):
         region = self.tabla_turnos.identify("region", event.x, event.y)
@@ -170,7 +169,9 @@ class DayTopWindow(Toplevel):
         self.selector_odontologo= ttk.Combobox(self.ventana_secundaria, values= self.valores_combobox, state= "readonly", width= 40, justify= CENTER, background= "white")
         self.selector_odontologo.pack(pady= 8)
         self.selector_odontologo.set("Odontólogo")
-        if (odontologo != ''):
+        if self.valores_combobox == []:
+            self.selector_odontologo.set("No hay odontologos")
+        if odontologo != '':
             profesional = f"Mat. {matricula[0]} - {odontologo[0]}, {odontologo[1]}"
             self.selector_odontologo.set(profesional)
         self.selector_odontologo.bind("<<ComboboxSelected>>", lambda e: self.ventana_secundaria.focus())
