@@ -17,8 +17,8 @@ Funcionalidades
 
 Instalación
 ----------------------------------------
-1. Descargar Dentalmatic.exe
-2. Ejecutar Dentalmatic.exe
+1. Clonar este repositorio   
+2. Ejecutar main.py
 
 
 Librerías utilizadas
