@@ -363,7 +363,7 @@ class MasterPanel:
         item = self.tabla_paciente.focus()
         self.data = self.tabla_paciente.item(item)
         try:
-            self.dni_paciente = self.data['values'][1]
+            self.dni_paciente = self.data['values'][2]
         except:
             pass
 

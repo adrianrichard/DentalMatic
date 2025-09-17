@@ -6,20 +6,22 @@ from bd.conexion import Conexion
 from tkinter import *
 from PIL import Image, ImageTk
 import os
+import sys
+import subprocess
 
 class Galeria:
     def __init__(self):
         super().__init__()
         self.fuenteb = utl.definir_fuente_bold()
         self.fuenten = utl.definir_fuente()
-        self.imagen_ventana = utl.leer_imagen('imagenes/tooth.jpg', (38, 38), True)
-        self.imagen_zoom_mas = utl.leer_imagen('imagenes/zoom-in.png', (38, 38), True)
-        self.imagen_zoom_menos = utl.leer_imagen('imagenes/zoom-out.png', (38, 38), True)
-        self.imagen_zoom_100 = utl.leer_imagen('imagenes/zoom-real.png', (38, 38), True)
-        self.imagen_anterior_icono = utl.leer_imagen('imagenes/imagen-anterior.png', (38, 38), True)
-        self.imagen_siguiente_icono = utl.leer_imagen('imagenes/imagen-siguiente.png', (38, 38), True)
-        self.agregar_imagen_icono = utl.leer_imagen('imagenes/agregar-imagen.png', (38, 38), True)
-        self.eliminar_imagen_icono = utl.leer_imagen('imagenes/eliminar-imagen.png', (38, 38), True)
+        self.imagen_ventana = utl.leer_imagen('tooth.jpg', (38, 38), True)
+        self.imagen_zoom_mas = utl.leer_imagen('zoom-in.png', (38, 38), True)
+        self.imagen_zoom_menos = utl.leer_imagen('zoom-out.png', (38, 38), True)
+        self.imagen_zoom_100 = utl.leer_imagen('zoom-real.png', (38, 38), True)
+        self.imagen_anterior_icono = utl.leer_imagen('imagen-anterior.png', (38, 38), True)
+        self.imagen_siguiente_icono = utl.leer_imagen('imagen-siguiente.png', (38, 38), True)
+        self.agregar_imagen_icono = utl.leer_imagen('agregar-imagen.png', (38, 38), True)
+        self.eliminar_imagen_icono = utl.leer_imagen('eliminar-imagen.png', (38, 38), True)
         self.dni_paciente = StringVar()
         self.paciente = None
         self.ventana_galeria = None
@@ -38,21 +40,31 @@ class Galeria:
         self.posicion_imagen = [0, 0]  # Para el desplazamiento de imagen con zoom
 
     def crear_carpeta(self, dni):
-        self.folder_name = "galeria/"+str(dni)
-        self.folder_path = os.path.abspath(self.folder_name)
+        """
+        Crea una carpeta con el nombre del DNI dentro de la carpeta 'galeria'.
+        Retorna (éxito, ruta_completa)
+        """
         try:
-            if not os.path.exists(self.folder_name):
-                answer = messagebox.askokcancel('Crear carpeta', '¿Desea crear la galeria?', icon= 'warning')                
-                if answer:
-                    os.makedirs(self.folder_name)
-                    messagebox.showinfo("Galeria", "Carpeta creada exitosamente")
-                    return True
-                else:
-                    return False
-            else:
-                return True
+            # Obtener rutas absolutas
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            project_root = os.path.dirname(current_dir)
+            galeria_path = os.path.join(project_root, 'galeria')
+            paciente_path = os.path.join(galeria_path, str(dni))
+            
+            # Verificar si ya existe
+            if os.path.exists(paciente_path):
+                return True  # Ya existe
+            
+            # Crear carpetas (galeria primero si no existe)
+            os.makedirs(galeria_path, exist_ok=True)
+            os.makedirs(paciente_path)
+            
+            messagebox.showinfo("Éxito", f"Galería creada para DNI {dni}")
+            return True
+            
         except Exception as e:
-                messagebox.showerror("Error", f"No se pudo abrir la imagen: {e}")
+            messagebox.showerror("Error", f"No se pudo crear la carpeta: {e}")
+            return False, None
 
     def ventana_gal(self):
         self.ventana_galeria= tk.Toplevel()
@@ -90,7 +102,7 @@ class Galeria:
             if self.lista_imagenes:
                 self.mostrar_imagen(0)
                 self.cargar_miniaturas()
-    
+
     # Programar la carga después de que la ventana esté visible
         self.ventana_galeria.after(100, cargar_primera_imagen)
         self.ventana_galeria.mainloop()

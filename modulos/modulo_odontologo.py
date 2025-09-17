@@ -115,8 +115,6 @@ class Odontologo:
             self.matricula_valida.config(fg= "green", text= "Válido")
             self.entry_matricula.config(bg= "green")
             matricula = True
-        # datos = self.matricula.get(), self.apellido_odontologo.get().upper(), self.nombre_odontologo.get().upper()
-        # print(datos)
         if apellido and nombre and matricula:
             datos = self.matricula.get(), self.apellido_odontologo.get().upper(), self.nombre_odontologo.get().upper()
             if self.verificar_matricula_existente(self.matricula.get()):
