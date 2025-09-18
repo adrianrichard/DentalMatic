@@ -234,43 +234,34 @@ class MasterPanel:
             return []
 
     def cargar_pacientes_paginados(self):
-        """Muestra los pacientes paginados de acuerdo al índice actual y controla los botones de navegación."""
         pacientes = self.cargar_tabla_pacientes()
         total = len(pacientes)
         inicio = self.indice_paciente
-        fin = min(inicio + self.incremento, total) # Control de índice final
+        fin = min(inicio + self.incremento, total)
 
-        # Limpiar la tabla antes de insertar nuevos datos
         self.tabla_paciente.delete(*self.tabla_paciente.get_children())
-
-        # Insertar pacientes en la tabla
         for i in range(inicio, fin):
             self.tabla_paciente.insert('', 'end', text= pacientes[i][0], values= pacientes[i][1:])
 
-        # --- Control de botones ---
-        # Botón previo
         if self.indice_paciente == 0:
-            self.boton_previo.config(state= 'disabled', bg= 'gray') # Desactivado y gris
+            self.boton_previo.config(state= 'disabled', bg= 'gray')
         else:
-            self.boton_previo.config(state= 'normal', bg= self.color_fondo1) # Activado y verde
+            self.boton_previo.config(state= 'normal', bg= self.color_fondo1)
 
-        # Botón siguiente
         if fin >= total:
-            self.boton_pos.config(state= 'disabled', bg= 'gray') # Desactivado y gris
+            self.boton_pos.config(state= 'disabled', bg= 'gray')
         else:
-            self.boton_pos.config(state= 'normal', bg= self.color_fondo1) # Activado y verde
+            self.boton_pos.config(state= 'normal', bg= self.color_fondo1)
 
     def cargar_pacientes_previos(self):
-        """Carga la página anterior de pacientes."""
-        self.indice_paciente = max(0, self.indice_paciente - self.incremento) # No permite índice negativo
+        self.indice_paciente = max(0, self.indice_paciente - self.incremento)
         self.cargar_pacientes_paginados()
 
     def cargar_pacientes_posteriores(self):
-        """Carga la página siguiente de pacientes."""
         pacientes = self.cargar_tabla_pacientes()
         total = len(pacientes)
         if self.indice_paciente + self.incremento < total:
-            self.indice_paciente += self.incremento # Avanza a la siguiente página
+            self.indice_paciente += self.incremento
         self.cargar_pacientes_paginados()
 
     def mostrar_pacientes(self):
@@ -293,7 +284,6 @@ class MasterPanel:
                     self.tabla_paciente.insert('', i, text= datos[i][0], values= datos[i][0:])
 
     def buscar_paciente(self, event= None):
-        """Busca pacientes por nombre o apellido y muestra mensaje si no hay resultados."""
         buscar = self.dato_paciente.get()
         try:
             cursor = self.miConexion.cursor()
@@ -304,17 +294,16 @@ class MasterPanel:
             datos = cursor.fetchall()
             self.tabla_paciente.delete(*self.tabla_paciente.get_children())
 
-            if datos:  # Si encuentra resultados
+            if datos:
                 for i, dato in enumerate(datos):
                     self.tabla_paciente.insert('', 'end', text= dato[0], values= dato[0:])
-            else:  # Si no encuentra resultados
+            else:
                 messagebox.showinfo("BUSCAR", "No se encontraron coincidencias", parent= self.ventana)
 
         except Exception as e:
             messagebox.showerror("Error", f"Error al buscar paciente: {e}", parent= self.ventana)
 
     def buscar_historia(self, event=None):
-        """Busca historia clínica por apellido, nombre o DNI y muestra mensaje si no hay resultados."""
         buscar = self.dato_paciente2.get()
         try:
             cursor = self.miConexion.cursor()
@@ -324,20 +313,16 @@ class MasterPanel:
             )
             datos = cursor.fetchall()
 
-            # Limpiar tabla antes de insertar nuevos datos
             self.tabla_historia.delete(*self.tabla_historia.get_children())
-
-            if datos:  # Si encuentra resultados
+            if datos:
                 for i, dato in enumerate(datos):
                     self.tabla_historia.insert('', 'end', values= dato)
-            else:  # Si no encuentra resultados
+            else:
                 messagebox.showinfo("BUSCAR", "No se encontraron coincidencias", parent= self.ventana)
-
         except Exception as e:
             messagebox.showerror("ERROR", f"Error en la búsqueda: {e}", parent= self.ventana)
 
     def buscar_galeria(self, event=None):
-        """Busca historia clínica por apellido, nombre o DNI y muestra mensaje si no hay resultados."""
         buscar = self.dato_paciente2.get()
         try:
             cursor = self.miConexion.cursor()
@@ -347,15 +332,12 @@ class MasterPanel:
             )
             datos = cursor.fetchall()
 
-            # Limpiar tabla antes de insertar nuevos datos
             self.tabla_galeria.delete(*self.tabla_galeria.get_children())
-
-            if datos:  # Si encuentra resultados
+            if datos:
                 for i, dato in enumerate(datos):
                     self.tabla_galeria.insert('', 'end', values= dato)
-            else:  # Si no encuentra resultados
+            else:
                 messagebox.showinfo("BUSCAR", "No se encontraron coincidencias", parent= self.ventana)
-
         except Exception as e:
             messagebox.showerror("ERROR", f"Error en la búsqueda: {e}", parent= self.ventana)
 
@@ -380,21 +362,15 @@ class MasterPanel:
             cur.execute(CONSULTA_USUARIOS)
             datos = cur.fetchall()
 
-            # Limpiar tabla existente
             self.tabla_usuario.delete(*self.tabla_usuario.get_children())
-
-            # Insertar nuevos datos
             for nombre, _, tipo in datos:
                 self.tabla_usuario.insert('', 'end', values= (nombre, MASCARA_CONTRASENA, tipo))
 
         except Exception as e:
-            # Mostrar error al usuario
             messagebox.showerror(
                 "Error al cargar usuarios",
                 f"No se pudieron cargar los usuarios:\n{str(e)}\n\n"
-                "Por favor verifique la conexión a la base de datos e intente nuevamente."
-                , parent= self.ventana
-            )
+                "Por favor verifique la conexión a la base de datos e intente nuevamente.", parent= self.ventana)
 
     def seleccionar_usuario(self, event):
         selected_item = self.tabla_usuario.selection()
@@ -420,7 +396,7 @@ class MasterPanel:
 
     def editar_usuario(self, event):
         region = self.tabla_usuario.identify("region", event.x, event.y)
-        if region == "heading":  # Si el doble clic es en el encabezado
+        if region == "heading":
             return
         else:
             try:
@@ -456,21 +432,15 @@ class MasterPanel:
             cur.execute(CONSULTA_ODONTOLOGOS)
             datos = cur.fetchall()
 
-            # Limpiar tabla existente
             self.tabla_odontologos.delete(*self.tabla_odontologos.get_children())
-
-            # Insertar nuevos datos
             for matricula, apellido_odontologo, nombre_odontologo in datos:
                 self.tabla_odontologos.insert('', 'end', values= (apellido_odontologo, nombre_odontologo, matricula))
 
         except Exception as e:
-            # Mostrar error al usuario
             messagebox.showerror(
                 "Error al cargar odontologos",
                 f"No se pudieron cargar los odontologos:\n{str(e)}\n\n"
-                "Por favor verifique la conexión a la base de datos e intente nuevamente."
-                , parent= self.ventana
-            )
+                "Por favor verifique la conexión a la base de datos e intente nuevamente.", parent= self.ventana)
 
     def seleccionar_odontologo(self, event):
         selected_item = self.tabla_odontologos.selection()
@@ -484,7 +454,7 @@ class MasterPanel:
 
     def editar_odontologo(self, event):
         region = self.tabla_odontologos.identify("region", event.x, event.y)
-        if region == "heading":  # Si el doble clic es en el encabezado
+        if region == "heading":
             return
         else:
             try:
@@ -523,49 +493,35 @@ class MasterPanel:
             pass
 
     def abrir_ayuda_chm(self):
-        # Obtener la ruta absoluta del archivo CHM
         base_dir = os.path.dirname(os.path.abspath(__file__))
         util_dir = os.path.join(os.path.dirname(base_dir), 'util')
         chm_path = os.path.join(util_dir, 'AyudaMyM.chm')
         
         if not os.path.exists(chm_path):
-            messagebox.showerror("Error", 
-                f"El archivo de ayuda no se encuentra en la ubicación esperada:\n{chm_path}")
+            messagebox.showerror("Error","El archivo de ayuda no se encuentra")
             return
 
         try:
             if sys.platform == "win32":
-                # Windows - método nativo
                 os.startfile(chm_path)
                 
             elif sys.platform == "darwin":
-                # macOS - intentar con aplicaciones disponibles
                 try:
                     subprocess.Popen(["open", chm_path])
                 except:
-                    # Alternativa para macOS
                     subprocess.Popen(["qlmanage", "-p", chm_path])
-                    
             else:
-                # Linux y otros sistemas
                 try:
-                    # Intentar con xdg-open (estándar en Linux)
                     subprocess.Popen(["xdg-open", chm_path])
                 except FileNotFoundError:
-                    # Alternativas para Linux
                     try:
                         subprocess.Popen(["kchmviewer", chm_path])
                     except FileNotFoundError:
                         try:
                             subprocess.Popen(["chmsee", chm_path])
                         except FileNotFoundError:
-                            messagebox.showwarning(
-                                "Advertencia", 
-                                "No se encontró un visor CHM compatible. "
-                                "Instale kchmviewer o chmsee."
-                            )
+                            messagebox.showwarning("Advertencia", "No se encontró un visor CHM compatible")
                             return
-                            
         except Exception as e:
             messagebox.showerror("Error", f"No se pudo abrir la ayuda: {str(e)}")
 
@@ -624,9 +580,9 @@ class MasterPanel:
         self.paginas = ttk.Notebook(self.frame_raiz, style= 'TNotebook')
 
         self.paginas.grid(column= 0, row= 0, sticky= 'nsew')
-        self.frame_principal = Frame(self.paginas, bg= self.color_fondo2) #color de fondo
-        self.frame_usuarios = Frame(self.paginas, bg= self.color_fondo2) #color de fondo
-        self.frame_pacientes = Frame(self.paginas, bg= self.color_fondo2) #color de fondo
+        self.frame_principal = Frame(self.paginas, bg= self.color_fondo2)
+        self.frame_usuarios = Frame(self.paginas, bg= self.color_fondo2)
+        self.frame_pacientes = Frame(self.paginas, bg= self.color_fondo2)
         self.frame_calendario = Frame(self.paginas, bg= self.color_fondo2)
         self.frame_historia = Frame(self.paginas, bg= self.color_fondo2)
         self.frame_herramientas = Frame(self.paginas, bg= self.color_fondo2)
@@ -640,13 +596,14 @@ class MasterPanel:
         self.paginas.add(self.frame_herramientas)
 
 		##############################         PAGINAS       #############################################
-		######################## FRAME TITULO #################
-        self.frame_top.grid_columnconfigure(0, weight=1)  # Columna 0 se expande
-        self.frame_top.grid_columnconfigure(1, weight=0)  # Columna 1 no se expande
+		######################## TITULO #################
+        self.frame_top.grid_columnconfigure(0, weight=1) 
+        self.frame_top.grid_columnconfigure(1, weight=0)
         self.titulo = Label(self.frame_top, text= 'Consultorio Odontológico MyM', bg= self.color_fondo1, fg= 'white', font= ('Comic Sans MS', 15, 'bold'))
         self.titulo.grid(column= 0, row= 0, sticky='ew')
         self.boton_ayuda= Button(self.frame_top, image= self.imagen_ayuda, text= 'Ayuda', fg= 'black', font= self.fuenteb, bg= self.color_fondo1, command= self.abrir_ayuda_chm, relief= 'flat', borderwidth= 0, highlightthickness= 0, cursor= 'hand2', activebackground= self.color_fondo1)
         self.boton_ayuda.grid(column= 1, row= 0, sticky= 'e', padx= 10, pady= 10)
+        
 		######################## VENTANA PRINCIPAL #################
         Label(self.frame_principal, image= self.logo, bg= self.color_fondo2).pack(expand= 1)
 

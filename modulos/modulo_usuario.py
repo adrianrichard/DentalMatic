@@ -114,8 +114,9 @@ class Usuario:
             if self.master_panel_ref:  # Si tenemos referencia al panel principal
                     self.master_panel_ref.mostrar_usuarios()
             self.db.cerrar_bd()
+            self.frame_usuario.grab_release()
             messagebox.showinfo("Éxito", "Usuario guardado correctamente", parent= self.frame_usuario)
-            self.frame_usuario.destroy()            
+            self.frame_usuario.destroy()
 
         except Exception as e:
             self.frame_usuario.grab_release()

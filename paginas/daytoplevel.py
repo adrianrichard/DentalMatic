@@ -251,7 +251,6 @@ class DayTopWindow(Toplevel):
                     messagebox.showerror("Guardar", "No se pudo guardar", parent= self.ventana_secundaria)
 
     def obtener_matricula_odontologo(self):
-        """Extrae la matrícula del odontólogo seleccionado"""
         odontologo = self.selector_odontologo.get()
         match = re.search(r'Mat\.?\s*(\d+)', odontologo)
         try:

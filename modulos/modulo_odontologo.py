@@ -187,9 +187,11 @@ class Odontologo:
         if apellido_valido and nombre_valido:
             if int(self.matricula.get()) != self.matricula_anterior:
                 if self.verificar_matricula_existente(self.matricula.get()):
+                    self.frame_odontologo.grab_release()
                     messagebox.showerror("Error", "La matrícula ya existe")
                     self.matricula_valida.config(fg= "red", text= "Ya existe")
                     self.entry_matricula.config(bg= "red")
+                    self.frame_odontologo.grab_set()
                     return
             try:
                 sql = "UPDATE Odontologos SET Apellido_odontologo = ?, Nombre_odontologo = ?, Matricula = ? WHERE Matricula = ?"

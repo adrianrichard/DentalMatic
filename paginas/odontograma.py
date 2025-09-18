@@ -12,6 +12,7 @@ from reportlab.lib import colors
 import platform
 import subprocess
 import os
+import re
 pacientes=[]
 buttons = []
 
@@ -61,9 +62,11 @@ class Odontograma:
         self.ancho = 700
 
         self.cargar_odontologos()
-        self.selector_odontologo= ttk.Combobox(self.frame_datos_paciente, state= "readonly", values= self.odontologos, width= 15, justify= CENTER, background= "white")
+        self.selector_odontologo= ttk.Combobox(self.frame_datos_paciente, state= "readonly", values= self.valores_combobox, width= 40, justify= CENTER, background= "white")
         self.selector_odontologo.grid(column= 5, row= 1, sticky= 'w', padx= (10, 10))
         self.selector_odontologo.set("Odontólogo")
+        if self.valores_combobox == []:
+            self.selector_odontologo.set("No hay odontologos")
         self.aviso_odontologo = Label(self.frame_datos_paciente, text= '', font= self.fuenteb, bg= "gray90")
         self.aviso_odontologo.grid(column= 4, row= 1, sticky= 'e', padx= (5, 0))
 
@@ -75,32 +78,7 @@ class Odontograma:
         self.canvas = tk.Canvas(self.frame_dientes, width= self.ancho-20, height= 300)
         self.canvas.grid(row= 0, column= 0, columnspan=3, padx= 10)
         self.crear_dientes()
-        # self.frame_tabla = Frame(self.ventana_odontograma)
-        # self.frame_tabla.grid(column= 0, row= 4, pady= (10, 10))
-        # self.estilo_tabla2 = ttk.Style(self.ventana_odontograma)
-        # estilo_tabla.theme_use('alt')
-        # self.estilo_tabla2.configure("Treeview", font= self.fuenten, foreground= 'black', rowheight= 20)
-        # #estilo_tabla.map('Treeview.Heading', background=[('selected', '#1F704B')], foreground=[('selected','white')] )
-        # self.estilo_tabla2.configure('Treeview.Heading', background= 'green', fg= 'black', padding= 3, font= self.fuenteb)
-        # self.tabla_prestaciones = ttk.Treeview(self.frame_tabla, columns= ("Fecha",  "Prestacion", "Código", "Odontologo"), show= 'headings', height= 8, selectmode= 'browse')
-        # self.tabla_prestaciones.grid(column= 0, row= 1, columnspan= 4, sticky= 'nsew', padx= 5, pady= 5)
-        # ladoy = ttk.Scrollbar(self.frame_tabla, orient ='vertical', command = self.tabla_prestaciones.yview)
-        # ladoy.grid(column = 5, row = 1, sticky='ns')
-        # self.tabla_prestaciones.configure(yscrollcommand = ladoy.set)
 
-        # self.tabla_prestaciones.heading("Fecha", text= "Fecha")
-        # self.tabla_prestaciones.heading("Código", text= "Código")
-        # self.tabla_prestaciones.heading("Prestacion", text= "Prestacion")
-        # self.tabla_prestaciones.heading("Odontologo", text= "Odontologo")
-
-        # # Ajustar el ancho de las columnas
-        # self.tabla_prestaciones.column("Fecha", width= 80, anchor= 'center')
-        # self.tabla_prestaciones.column("Código", width= 80)
-        # self.tabla_prestaciones.column("Prestacion", width= 250)
-        # self.tabla_prestaciones.column("Odontologo", width= 200)
-
-        # self.frame_botones = Frame(self.ventana_odontograma, bg= "gray")
-        # self.frame_botones.grid(column= 0, row= 5, pady= (10,0))
         self.boton_guardar_odonto=Button(self.frame_dientes, text= 'Guardar', command= self.guardar_odontograma, font= self.fuenteb, bg= '#1F704B', fg= 'white', width= 8)
         self.boton_guardar_odonto.grid(row= 1, column= 0, padx= 10, pady= 10)
         self.boton_PDF=Button(self.frame_dientes, text= 'Crear PDF', command= self.crear_pdf, font= self.fuenteb, fg= 'white', bg= "gray", width= 8)
@@ -128,11 +106,15 @@ class Odontograma:
         self.cur= self.miConexion.cursor()
         self.lista_odontologos = []
         self.odontologos = []
+        self.valores_combobox = []
         try:
-            self.cur.execute("SELECT Apellido_odontologo FROM odontologos")
+            self.cur.execute("SELECT Matricula, Apellido_odontologo, Nombre_odontologo FROM odontologos ORDER BY Matricula")
             self.lista_odontologos = self.cur.fetchall()
-            self.odontologos = [odontologo[0] for odontologo in self.lista_odontologos]
-            self.miConexion.commit()
+            for matricula, nombre, apellido in self.lista_odontologos:
+                texto = f"Mat. {matricula} - {apellido}, {nombre}"
+                self.valores_combobox.append(texto)
+            # Cargar el combobox
+            self.valores_combobox
         except:
             self.ventana_odontograma.grab_release()
             messagebox.showinfo("Odontologos", "No hay odontologos cargados", parent= self.ventana_odontograma)
@@ -174,8 +156,7 @@ class Odontograma:
 
     def cargar_odontograma(self):
         self.miCursor= self.miConexion.cursor()
-        self.agregar_prestacion= True
-        if self.crear_odontograma or self.agregar_prestacion:
+        if self.crear_odontograma:
             try:
                 self.miCursor.execute("SELECT id_odontograma from Odontogramas ORDER BY id_odontograma DESC")
                 self.miConexion.commit()
@@ -183,7 +164,6 @@ class Odontograma:
                 self.ID_odonto = self.ID_odonto_actual[0]
             except:
                 return
-        #UTIL PARA CUANDO PODAMOS ELEGIR UN ODONTOGRAMA ANTERIOR
         else:
             try:
                 self.miCursor.execute("SELECT id_odontograma from Odontogramas WHERE dni_paciente=? ORDER BY id_odontograma DESC", (self.dni_paciente,))
@@ -200,16 +180,16 @@ class Odontograma:
                 self.ID_odonto = self.ID_odonto_actual[0]
 
     def obtener_matricula(self, apellido):
-        self.cur= self.miConexion.cursor()
+        odontologo = self.selector_odontologo.get()
+        match = re.search(r'Mat\.?\s*(\d+)', odontologo)
         try:
-            self.cur.execute("SELECT matricula FROM odontologos WHERE Apellido_odontologo=?",(apellido,))
-            matricula = self.cur.fetchone()
-            self.miConexion.commit()
-            return matricula[0]
-        except:
-            self.ventana_odontograma.grab_release()
-            messagebox.showinfo("Odontologos", "No hay odontologos cargados", parent= self.ventana_odontograma)
-            self.ventana_odontograma.grab_set()
+            odontologo = self.selector_odontologo.get()
+            match = re.search(r'Mat\.?\s*(\d+)', odontologo)
+            if match:
+                return int(match.group(1))
+            return None
+        except (AttributeError, ValueError):
+            return None
 
     def guardar_odontograma(self):
         self.ventana_odontograma.grab_release()
@@ -241,9 +221,11 @@ class Odontograma:
 
     def crear_pdf(self):
         try:
-            # Obtener la ruta del directorio donde está main.py
+            # Obtener la ruta del directorio donde está el script actual
             directorio_actual = os.path.dirname(os.path.abspath(__file__))
             directorio_padre = os.path.dirname(directorio_actual)
+            
+            # Carpeta odontogramas un nivel arriba del script
             carpeta_odontogramas = os.path.join(directorio_padre, "odontogramas")
             
             if not os.path.exists(carpeta_odontogramas):
@@ -255,29 +237,26 @@ class Odontograma:
             x1 = x0 + self.canvas.winfo_width()
             y1 = y0 + self.canvas.winfo_height()
             imagen_canvas = ImageGrab.grab((x0, y0, x1, y1))
-            
-            # Guardar imagen temporal en la carpeta odontogramas
-            temp_image_path = os.path.join(directorio_padre, "canvas_image.png")
+
+            temp_image_path = os.path.join(carpeta_odontogramas, "canvas_image.png")
             imagen_canvas.save(temp_image_path)
-            
+
             apellido = self.paciente[0]
             nombre = self.paciente[1]
             dni = self.paciente[2]
-            #fechanac = self.convertir_fecha(self.paciente[3])
             obra_social = self.paciente[4]
             nrosocio = self.paciente[5]
-            
-            # Crear el nombre del archivo PDF en la carpeta odontogramas
-            nombre_archivo = nombre + apellido + self.fecha_actual + ".pdf"
+
+            nombre_archivo = f"{nombre}_{apellido}_{self.fecha_actual}.pdf"
             pdf_path = os.path.join(carpeta_odontogramas, nombre_archivo)
-            
+
             pdf = pdf_canvas.Canvas(pdf_path, pagesize=A4)
             ancho_pagina, alto_pagina = A4
-            
-            # Ruta del logo relativa al directorio actual
-            logo_path = os.path.join(directorio_padre, "LOGO11.png")
+
+            carpeta_imagenes = os.path.join(directorio_padre, "imagenes")
+            logo_path = os.path.join(carpeta_imagenes, "LOGO11.png")
             alto_imagen = 500
-            
+
             if os.path.exists(logo_path):
                 with Image.open(logo_path) as img:
                     logo_width, logo_height = img.size
@@ -288,12 +267,13 @@ class Odontograma:
                     logo_y = alto_pagina - 120
 
                 pdf.drawImage(logo_path, logo_x, logo_y, width=logo_width, height=logo_height)
+            else:
+                messagebox.showwarning("Odontograma", "Advertencia: No se encontró el logo")
 
             pdf.setFont("Helvetica", 15)
             pdf.setStrokeColor("black")
             pdf.setLineWidth(1)
             
-            # Título
             pdf.setFont("Helvetica-Bold", 16)
             pdf.drawCentredString(ancho_pagina/2, alto_pagina - 150, "FICHA ODONTOLÓGICA")
         
@@ -320,10 +300,8 @@ class Odontograma:
             tabla_paciente.wrapOn(pdf, ancho_pagina, alto_pagina)
             tabla_paciente.drawOn(pdf, 50, alto_pagina - 250)
             
-            # Línea divisoria antes de la imagen
             pdf.line(50, alto_pagina - 270, ancho_pagina - 50, alto_pagina - 270)
             
-            # Usar la imagen temporal guardada en la carpeta odontogramas
             temp_image_full_path = os.path.join(carpeta_odontogramas, "canvas_image.png")
             if os.path.exists(temp_image_full_path):
                 with Image.open(temp_image_full_path) as img:
@@ -343,16 +321,14 @@ class Odontograma:
             
             try:
                 pdf.save()
-                # Limpiar imagen temporal
                 if os.path.exists(temp_image_full_path):
                     os.remove(temp_image_full_path)
                     
                 self.ventana_odontograma.grab_release()
-                messagebox.showinfo("Odontograma", f"Informe creado exitosamente en:\n{pdf_path}", parent=self.ventana_odontograma)
+                messagebox.showinfo("Odontograma", f"Informe creado exitosamente", parent=self.ventana_odontograma)
                 self.ventana_odontograma.grab_set()
                 self.abrir_carpeta_contenedora(pdf_path)
             except Exception as e:
-                # Limpiar imagen temporal en caso de error
                 if os.path.exists(temp_image_full_path):
                     os.remove(temp_image_full_path)
                     
@@ -454,7 +430,6 @@ class Odontograma:
             btn.grid(row= 1, column= i+1, pady= 5, padx= 15)
         Label(corona_extraccion_frame, text= "Extracción", font= ("Arial", 12)).grid(row= 0, column= 0, pady= 5, padx= (10, 20))
         Label(corona_extraccion_frame, text= "Corona", font= ("Arial", 12)).grid(row= 1, column= 0, pady= 5, padx= (10, 20))
-        #Button(botones_frame, text= 'O Azul', command= partial(self.corona, numero), bg= "blue", width= 5).grid(row= 0, column= 3, padx= 10)
         botones_frame = Frame(self.ventana_secundaria)
         botones_frame.pack()
         Button(botones_frame, text= 'Guardar', command= self.guardar_diente, font= self.fuenteb, bg= '#1F704B', fg= 'white', width= 8).grid(row= 2, column= 0, padx= 5)
@@ -493,15 +468,15 @@ class Odontograma:
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 5, outline= self.diente_actual[9])
+                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 2, outline= self.diente_actual[9])
             elif self.diente_actual[8] == 'red' or self.diente_actual[8] == 'blue' or self.diente_actual[8] == 'green':
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= 'white', outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= 'white', outline = "black", tags= 'C2')
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 5)
-                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 5)
+                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 2)
+                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 2)
             else:
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= self.diente_actual[3], outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= self.diente_actual[4], outline = "black", tags= 'C2')
@@ -525,15 +500,15 @@ class Odontograma:
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 5, outline= self.diente_actual[9])
+                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 2, outline= self.diente_actual[9])
             elif self.diente_actual[8] == 'red' or self.diente_actual[8] == 'blue' or self.diente_actual[8] == 'green':
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= 'white', outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= 'white', outline = "black", tags= 'C2')
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 5)
-                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 5)
+                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 2)
+                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 2)
             else:
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= self.diente_actual[5], outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= self.diente_actual[4], outline = "black", tags= 'C2')
@@ -558,15 +533,15 @@ class Odontograma:
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 5, outline= self.diente_actual[9])
+                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 2, outline= self.diente_actual[9])
             elif self.diente_actual[8] == 'red' or self.diente_actual[8] == 'blue' or self.diente_actual[8] == 'green':
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= 'white', outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= 'white', outline = "black", tags= 'C2')
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 5)
-                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 5)
+                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 2)
+                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 2)
             else:
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= self.diente_actual[5], outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= self.diente_actual[4], outline = "black", tags= 'C2')
@@ -591,15 +566,15 @@ class Odontograma:
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 5, outline= self.diente_actual[9])
+                self.canvas2.create_oval(x1+5, y1+5, x2-5, y2-5, width= 2, outline= self.diente_actual[9])
             elif self.diente_actual[8] == 'red' or self.diente_actual[8] == 'blue' or self.diente_actual[8] == 'green':
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= 'white', outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= 'white', outline = "black", tags= 'C2')
                 self.canvas2.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C3')
                 self.canvas2.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= 'white', outline = "black", tags= 'C4')
                 self.canvas2.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= 'white', tags= 'CO')
-                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 5)
-                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 5)
+                self.canvas2.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.diente_actual[8], width= 2)
+                self.canvas2.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.diente_actual[8], width= 2)
             else:
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= self.diente_actual[3], outline = "black", tags= 'C1')
                 self.canvas2.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= self.diente_actual[6], outline = "black", tags= 'C2')
@@ -754,7 +729,7 @@ class Odontograma:
                 self.dientes= self.miCursor.fetchall()
             except:
                 self.ventana_odontograma.grab_release()
-                messagebox.showinfo("Dientes", "No se pudieron cargar prestaciones", parent= self.ventana_odontograma)
+                messagebox.showinfo("Dientes", "No se pudo cargar odontograma", parent= self.ventana_odontograma)
                 self.ventana_odontograma.grab_set()
 
     def buscar_valor(self, valor):
@@ -769,11 +744,9 @@ class Odontograma:
             return None
 
     def change_cursor_enter(self, event):
-        # Cambiar el cursor al pasar sobre un cuadrado
         self.canvas.config(cursor= "hand2")
 
     def change_cursor_leave(self, event):
-        # Restaurar el cursor al salir del cuadrado
         self.canvas.config(cursor= "")
 
     def cambiar_color(self, event, numero, tag):
@@ -1179,15 +1152,15 @@ class Odontograma:
                     self.canvas.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= "white", outline = "black")
                     self.canvas.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= "white", outline = "black")
                     self.canvas.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= "white", tags= tag_diente)
-                    self.canvas.create_oval(x1+5, y1+5, x2-5, y2-5, width= 5, outline= self.dientes[indice][9])
+                    self.canvas.create_oval(x1+5, y1+5, x2-5, y2-5, width= 2, outline= self.dientes[indice][9])
                 elif self.dientes[indice][8] == 'red' or self.dientes[indice][8] == 'blue' or self.dientes[indice][8] == 'green':
                     self.canvas.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= "white", outline = "black")
                     self.canvas.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= "white", outline = "black")
                     self.canvas.create_polygon(x2, y1, x1 + width/2, y1 + height/2, x2, y2, fill= "white", outline = "black")
                     self.canvas.create_polygon(x1, y2, x1 + width/2, y1 + height/2, x2, y2, fill= "white", outline = "black")
                     self.canvas.create_rectangle(x1 + width/3.0, y1 + height/3.0, x2 - width/3.0, y2 - height/3.0, fill= "white", tags= tag_diente)
-                    self.canvas.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.dientes[indice][8], width= 5)
-                    self.canvas.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.dientes[indice][8], width= 5)
+                    self.canvas.create_line(x1+5, y1+5, x2-5, y2-5, fill= self.dientes[indice][8], width= 2)
+                    self.canvas.create_line(x1+5, y2-5, x2-5, y1+5, fill= self.dientes[indice][8], width= 2)
                 else:
                     self.canvas.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x1, y2, fill= self.dientes[indice][5], outline = "black")#MEDIAL
                     self.canvas.create_polygon(x1, y1, x1 + width/2, y1 + height/2, x2, y1, fill= self.dientes[indice][6], outline = "black")#INTERIOR
