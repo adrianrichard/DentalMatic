@@ -105,7 +105,7 @@ class Usuario:
 
         Label(self.frame_principal, text='* Campos obligatorios', anchor="w", width=20, bg=self.color_fondo2, fg='red', font=self.fuenten).grid(column=2, row=4, pady=5, padx=2, sticky="w")
 
-        self.boton_cerrar = Button(self.frame_botones, text='Cerrar', font=self.fuenteb, fg='white', bg="orange", width=10, command=self.Salir)
+        self.boton_cerrar = Button(self.frame_botones, text='Cerrar', font=self.fuenteb, fg= 'white', bg= "orange", width= 10, command= self.Salir)
         self.boton_cerrar.grid(column=1, row=0, padx=5)
 
         self.frame_usuario.protocol("WM_DELETE_WINDOW", self.Salir)

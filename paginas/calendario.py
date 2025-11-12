@@ -139,3 +139,16 @@ class Calendario():
             self.toplevel = DayTopWindow(dia, self.mes, self.anio)
             self.marcar_dia_turno()
             self.actualizar_botones_fechas()
+            
+    # def cargar_mes_actual(self):
+    #     """ Carga el mes actual y actualiza la interfaz """
+    #     hoy = datetime.today()
+    #     self.anio = hoy.year
+    #     self.mes = hoy.month
+        
+    #     self.marcar_dia_turno()
+    #     self.actualizar_botones_fechas()
+    #     self.actualizar_encabezado()
+    ## CAMBIO AQUÍ: Habilitar el botón y asignar comando
+            # self.botones_fecha[i].configure(text= "DÍA ACTUAL", font = self.fuenteb, state= NORMAL, 
+            #                               bg= "orange", command= self.cargar_mes_actual)

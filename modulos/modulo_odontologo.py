@@ -224,6 +224,7 @@ class Odontologo:
     def Salir(self):
         self.frame_odontologo.grab_release()
         answer = messagebox.askokcancel('Salir', '¿Desea salir sin guardar?', icon='warning')
+        self.frame_odontologo.grab_set()
         if answer:
             self.miConexion.close()
             self.frame_odontologo.destroy()
