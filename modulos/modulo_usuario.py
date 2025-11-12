@@ -26,57 +26,89 @@ class Usuario:
     def ventana(self, master_panel_ref=None):
         if master_panel_ref:
             self.master_panel_ref = master_panel_ref
-        self.frame_usuario= tk.Toplevel()
-        self.frame_usuario.grab_set_global() # Obliga a las ventanas estar deshabilitadas y deshabilitar todos los eventos e interacciones con la ventana
-        self.frame_usuario.focus_set() # Mantiene el foco cuando se abre la ventana.
+        self.frame_usuario = tk.Toplevel()
+        self.frame_usuario.grab_set_global()
+        self.frame_usuario.focus_set()
         self.imagen_ventana = utl.leer_imagen('tooth.jpg', (38, 38))
         self.frame_usuario.iconphoto(False, self.imagen_ventana)
         self.frame_usuario.title('DentalMatic')
         self.frame_usuario.geometry('650x400')
-        self.frame_usuario.config(bg= self.color_fondo2)
-        self.frame_usuario.resizable(width= 0, height= 0)
-        self.frame_usuario.columnconfigure(0, weight= 1)
+        self.frame_usuario.config(bg=self.color_fondo2)
+        self.frame_usuario.resizable(width=0, height=0)
+        self.frame_usuario.columnconfigure(0, weight=1)
         utl.centrar_ventana(self.frame_usuario, 650, 380)
         self.menu = True
         self.color = True
-        self.frame_top = Frame(self.frame_usuario, bg= self.color_fondo1)
-        self.frame_top.grid(column= 0, row= 0, columnspan= 3, sticky= "nsew")
-        self.frame_principal = Frame(self.frame_usuario)
-        self.frame_principal.config(bg= self.color_fondo2)
-        self.frame_principal.grid(column= 1, row= 1, sticky= 'nsew')
+        
+        self.frame_top = Frame(self.frame_usuario, bg=self.color_fondo1)
+        self.frame_top.grid(column=0, row=0, columnspan=3, sticky="nsew")
+        
+        self.frame_principal = Frame(self.frame_usuario, bg=self.color_fondo2)
+        self.frame_principal.grid(column=0, row=1, sticky="nsew", padx=20)
+        
+        # Configurar columnas del frame principal
+        self.frame_principal.columnconfigure(0, weight=1)
+        self.frame_principal.columnconfigure(1, weight=0)
+        self.frame_principal.columnconfigure(2, weight=1)
 
-        #Entradas Y ETIQUETAS DATOS DEL USUARIO
-        Label(self.frame_principal, text= 'Nombre del usuario', anchor= "e", width= 20, bg= self.color_fondo2, fg= 'black', font= self.fuenteb).grid(column= 0, row= 1, pady= (20, 5))
-        self.entry_nombre = Entry(self.frame_principal, textvariable= self.nombre_usuario, width= 25, font= self.fuenten)
-        self.entry_nombre.grid(column= 1, row= 1, pady= 5, padx= 5)
-        self.nombre_usuario_valido = Label(self.frame_principal, text= '*', anchor= 'w', width= 25, bg= self.color_fondo2, fg= 'red', font= self.fuenten)
-        self.nombre_usuario_valido.grid(column= 2, row= 1, pady= 5, padx= 2)
+        # Entradas Y ETIQUETAS DATOS DEL USUARIO
+        Label(self.frame_principal, text='Nombre del usuario', anchor="e", width=20, bg=self.color_fondo2, fg='black', font=self.fuenteb).grid(column=0, row=1, pady=(20, 5), sticky="e")
+        
+        self.entry_nombre = Entry(self.frame_principal, textvariable=self.nombre_usuario, width=25, font=self.fuenten)
+        self.entry_nombre.grid(column=1, row=1, pady=5, padx=5)
+        
+        self.nombre_usuario_valido = Label(self.frame_principal, text='*', anchor='w', width=25, bg=self.color_fondo2, fg='red', font=self.fuenten)
+        self.nombre_usuario_valido.grid(column=2, row=1, pady=5, padx=2, sticky="w")
 
-        Label(self.frame_principal, text= 'Clave', anchor= "e", width= 20, bg= self.color_fondo2, fg= 'black', font= self.fuenteb).grid(column= 0, row= 2, pady= 5, padx= 2)
-        self.entry_clave = Entry(self.frame_principal, textvariable= self.clave, width= 25, font= self.fuenten)
-        self.entry_clave.grid(column= 1, row= 2, pady= 5, padx= 5)
-        Label(self.frame_principal, text= '*', anchor= "w", width= 25, bg= self.color_fondo2, fg= 'red', font= self.fuenten).grid(column= 2, row= 2, pady= 5, padx= 2)
+        Label(self.frame_principal, text='Clave', anchor="e", width=20, bg=self.color_fondo2, fg='black', font=self.fuenteb).grid(column=0, row=2, pady=5, sticky="e")
+        
+        self.entry_clave = Entry(self.frame_principal, textvariable=self.clave, width=25, font=self.fuenten)
+        self.entry_clave.grid(column=1, row=2, pady=5, padx=5)
+        
+        Label(self.frame_principal, text='*', anchor="w", width=25, bg=self.color_fondo2, fg='red', font=self.fuenten).grid(column=2, row=2, pady=5, padx=2, sticky="w")
 
-        Label(self.frame_principal, text= 'Tipo de usuario', anchor= "e", width= 20, bg= self.color_fondo2, fg= 'black', font= self.fuenteb).grid(column= 0, row= 3, pady= 5, padx= 2)
+        Label(self.frame_principal, text='Tipo de usuario', anchor="e", width=20, bg=self.color_fondo2, fg='black', font=self.fuenteb).grid(column=0, row=3, pady=5, sticky="e")
+        
+        self.frame_botones = Frame(self.frame_principal, bg=self.color_fondo2)
+        self.frame_botones.grid(column=0, row=6, columnspan=3, sticky="ew", pady=(10, 10))
+        
+        self.frame_botones.columnconfigure(0, weight=1)
+        self.frame_botones.columnconfigure(1, weight=1)
+        
         if(self.nombre_usuario.get()==''):
-            self.titulo = Label(self.frame_top, text= 'Crear usuario', bg= self.color_fondo1, fg= 'white', font= self.fuenteb).grid(column= 0, row= 0, pady= 20, padx= 10)
-            Button(self.frame_principal, text= 'Guardar', font= self.fuenteb, fg= 'white', bg= self.color_fondo1, activebackground= 'gray', bd= 2, width= 10, command= self.guardar).grid(column= 0, row= 6, pady= 5, padx= 5)
-            self.combo=ttk.Combobox(self.frame_principal, textvariable= self.tipo_usuario, width= 23, font= self.fuenten, state= "readonly", values=["administrador", "odontologo", "secretario"])
-            self.combo.grid(column= 1, row= 3, pady= 5, padx= 5)
+            self.titulo = Label(self.frame_top, text='Crear usuario', bg=self.color_fondo1, fg='white', font=self.fuenteb)
+            self.titulo.grid(column=0, row=0, pady=20, padx=10)
+            
+            self.boton_guardar = Button(self.frame_botones, text='Guardar', font=self.fuenteb, fg='white', bg=self.color_fondo1, activebackground='gray', bd=2, width=10, command=self.guardar)
+            self.boton_guardar.grid(column=0, row=0, padx=5)
+            
+            self.combo = ttk.Combobox(self.frame_principal, textvariable=self.tipo_usuario, width=23, font=self.fuenten, state="readonly", values=["administrador", "odontologo", "secretario"])
+            self.combo.grid(column=1, row=3, pady=5, padx=5)
             self.combo.current(2)
             self.combo.set("Elegir tipo usuario")
-            Label(self.frame_principal, text= '*', anchor= "w", width= 25, bg= self.color_fondo2, fg= 'red', font= self.fuenten).grid(column= 2, row= 3, pady= 5, padx= 2)
+            
+            Label(self.frame_principal, text='*', anchor="w", width=25, bg=self.color_fondo2, fg='red', font=self.fuenten).grid(column=2, row=3, pady=5, padx=2, sticky="w")
         else:
-            self.titulo = Label(self.frame_top, text= 'Actualizar usuario', bg= self.color_fondo1, fg= 'white', font= self.fuenteb).grid(column= 0, row= 0, pady= 20, padx= 10)
-            Button(self.frame_principal, text= 'Actualizar',  font= self.fuenteb, fg= 'white', bg= self.color_fondo1, activebackground= 'gray', bd= 2, width= 10, command= self.actualizar).grid(column= 0, row= 6, pady= 5, padx= 5)
-            self.combo=ttk.Combobox(self.frame_principal, textvariable= self.tipo_usuario, width= 23, font= self.fuenten, state= "disabled", values=["administrador", "odontologo", "secretario"])
-            self.combo.grid(column= 1, row= 3, pady= 5, padx= 10)
-        Label(self.frame_principal, text= '* Campos obligatorios', anchor= "w", width= 20, bg= self.color_fondo2, fg= 'red', font= self.fuenten).grid(column= 2, row= 4, pady= 5, padx= 2)
+            self.titulo = Label(self.frame_top, text='Actualizar usuario', bg=self.color_fondo1, fg='white', font=self.fuenteb)
+            self.titulo.grid(column=0, row=0, pady=20, padx=10)
+            
+            self.boton_guardar = Button(self.frame_botones, text='Actualizar', font=self.fuenteb, fg='white', bg=self.color_fondo1, activebackground='gray', bd=2, width=10, command=self.actualizar)
+            self.boton_guardar.grid(column=0, row=0, padx=5)
+            
+            self.combo = ttk.Combobox(self.frame_principal, textvariable=self.tipo_usuario, width=23, font=self.fuenten, state="disabled", values=["administrador", "odontologo", "secretario"])
+            self.combo.grid(column=1, row=3, pady=5, padx=10)
 
-        Label(self.frame_principal, text= 'Contraseña: debe poseer un mínimo de 8 caracteres\n al menos una minuscula\n al menos una mayuscula\n al menos un digito', width= 50, borderwidth= 2, relief= "solid", bg= self.color_fondo2, fg= 'black', font= self.fuenten).grid(column= 0, columnspan= 3, row= 5, pady= 10)
-        Button(self.frame_principal, text= 'Cerrar',  font= self.fuenteb, fg= 'white', bg= "orange", width= 10, command= self.Salir).grid(column= 2, row= 6, pady= 5, padx= (0, 10))
+        self.texto = Label(self.frame_principal, 
+                        text='\nContraseña: debe poseer un mínimo de 8 caracteres, al menos una minuscula,\n al menos una mayuscula y al menos un digito\n', 
+                        width=50, borderwidth=2, relief="solid", bg=self.color_fondo2, fg='black', font=self.fuenten)
+        self.texto.grid(column=0, columnspan=3, row=5, pady=(10, 10), sticky="ew")
+
+        Label(self.frame_principal, text='* Campos obligatorios', anchor="w", width=20, bg=self.color_fondo2, fg='red', font=self.fuenten).grid(column=2, row=4, pady=5, padx=2, sticky="w")
+
+        self.boton_cerrar = Button(self.frame_botones, text='Cerrar', font=self.fuenteb, fg='white', bg="orange", width=10, command=self.Salir)
+        self.boton_cerrar.grid(column=1, row=0, padx=5)
+
         self.frame_usuario.protocol("WM_DELETE_WINDOW", self.Salir)
-
         self.frame_usuario.mainloop()
 
     def guardar(self):        

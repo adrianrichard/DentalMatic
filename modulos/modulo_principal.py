@@ -192,23 +192,20 @@ class MasterPanel:
             if not self.data['values'] or len(self.data['values']) < 3:
                 messagebox.showwarning("Advertencia", "No se pudo obtener los datos del paciente", parent=self.ventana)
                 return
-                
+
             dni_paciente = self.data['values'][2]
             nombre_completo = f"{self.data['values'][0]}, {self.data['values'][1]}"
-            
+
             # Crear instancia de galería
             gal = Galeria()
-            
-            # Verificar/crear carpeta - manejar correctamente el retorno tuple
+
             exito, ruta = gal.crear_carpeta(dni_paciente)
             
             if exito:
                 gal.cargar_paciente(dni_paciente)
                 gal.ventana_gal()
             else:
-                messagebox.showinfo("Información", 
-                                f"No se pudo acceder a la galería del paciente: {nombre_completo}", 
-                                parent=self.ventana)
+                messagebox.showinfo("Información",  f"No se pudo acceder a la galería del paciente: {nombre_completo}", parent=self.ventana)
                                 
         except IndexError:
             messagebox.showerror("Error", "Datos del paciente incompletos", parent=self.ventana)
@@ -243,7 +240,6 @@ class MasterPanel:
             messagebox.showerror("ERROR", f"Error inesperado: {e}", parent= self.ventana)
 
     def cargar_tabla_pacientes(self):
-        #self.db.cerrar_bd()
         self.miConexion = self.db.conectar()
         """Carga todos los pacientes desde la base de datos."""
         try:
@@ -401,7 +397,7 @@ class MasterPanel:
 
     def agregar_usuario(self):
         user = Usuario()
-        user.ventana(master_panel_ref=self)
+        user.ventana(master_panel_ref= self)
 
     def editar_user(self):
         item = self.tabla_usuario.focus()
@@ -427,7 +423,7 @@ class MasterPanel:
                 if self.usuario != 'Usuario':
                     user = Usuario()
                     user.cargar_datos(self.usuario)
-                    user.ventana(master_panel_ref=self)
+                    user.ventana(master_panel_ref= self)
                 else:
                     messagebox.showwarning("Advertencia", "Debe seleccionar un usuario", parent= self.ventana)
             except:
