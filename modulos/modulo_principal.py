@@ -182,18 +182,39 @@ class MasterPanel:
                 messagebox.showerror("ERROR", f"No se pudo cargar el paciente: {e}", parent= self.ventana)
     
     def abrir_galeria(self, event):
+        """Abre la galería del paciente seleccionado"""
         item = self.tabla_galeria.focus()
-        if item:
+        if not item:
+            return
+            
+        try:
             self.data = self.tabla_galeria.item(item)
-            try:
-                self.dni_paciente = self.data['values'][2]
-                gal = Galeria()
-                if gal.crear_carpeta(self.dni_paciente):
-                    gal.cargar_paciente(self.dni_paciente)
-                    gal.ventana_gal()
-            except Exception as e:
-                messagebox.showerror("ERROR", f"No se pudo cargar la galeria: {e}", parent= self.ventana)
-
+            if not self.data['values'] or len(self.data['values']) < 3:
+                messagebox.showwarning("Advertencia", "No se pudo obtener los datos del paciente", parent=self.ventana)
+                return
+                
+            dni_paciente = self.data['values'][2]
+            nombre_completo = f"{self.data['values'][0]}, {self.data['values'][1]}"
+            
+            # Crear instancia de galería
+            gal = Galeria()
+            
+            # Verificar/crear carpeta - manejar correctamente el retorno tuple
+            exito, ruta = gal.crear_carpeta(dni_paciente)
+            
+            if exito:
+                gal.cargar_paciente(dni_paciente)
+                gal.ventana_gal()
+            else:
+                messagebox.showinfo("Información", 
+                                f"No se pudo acceder a la galería del paciente: {nombre_completo}", 
+                                parent=self.ventana)
+                                
+        except IndexError:
+            messagebox.showerror("Error", "Datos del paciente incompletos", parent=self.ventana)
+        except Exception as e:
+            messagebox.showerror("ERROR", f"No se pudo cargar la galería: {str(e)}", parent=self.ventana)
+        
     def editar_odontograma(self, event):
         item = self.tabla_historia.focus()
         if item:
