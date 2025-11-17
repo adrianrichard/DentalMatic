@@ -35,7 +35,7 @@ class Odontograma:
         self.ventana_odontograma.geometry('750x500')
         self.ventana_odontograma.grid_columnconfigure(0, weight= 1)
         self.ventana_odontograma.configure(bg= "gray")
-        utl.centrar_ventana(self.ventana_odontograma, 900, 500)
+        utl.centrar_ventana(self.ventana_odontograma, 920, 500)
         self.fecha_actual = datetime.now().date()
         self.fecha_actual = self.fecha_actual.strftime("%d-%m-%Y")
         Label(self.ventana_odontograma, text= 'Odontograma', font= 'Arial 20 bold', bg= "gray", fg= 'white').grid(column= 0, row= 0)
@@ -63,7 +63,7 @@ class Odontograma:
 
         self.cargar_odontologos()
         self.selector_odontologo= ttk.Combobox(self.frame_datos_paciente, state= "readonly", values= self.valores_combobox, width= 40, justify= CENTER, background= "white")
-        self.selector_odontologo.grid(column= 5, row= 1, sticky= 'w', padx= (10, 10))
+        self.selector_odontologo.grid(column= 5, row= 1, sticky= 'w', padx= (5, 10))
         self.selector_odontologo.set("Odontólogo")
         if self.valores_combobox == []:
             self.selector_odontologo.set("No hay odontologos")
@@ -117,7 +117,7 @@ class Odontograma:
             self.valores_combobox
         except:
             self.ventana_odontograma.grab_release()
-            messagebox.showinfo("Odontologos", "No hay odontologos cargados", parent= self.ventana_odontograma)
+            messagebox.showinfo("Odontograma", "No hay odontologos cargados", parent= self.ventana_odontograma)
             self.ventana_odontograma.grab_set()
 
     def cargar_paciente(self, dni):
@@ -129,7 +129,7 @@ class Odontograma:
             self.miConexion.commit()
         except:
             self.ventana_odontograma.grab_release()
-            messagebox.showinfo("Paciente", "No se cargo el paciente", parent= self.ventana_odontograma)
+            messagebox.showinfo("Odontograma", "No se cargo el paciente", parent= self.ventana_odontograma)
             self.ventana_odontograma.grab_set()
 
     def convertir_fecha(self, fecha):
@@ -193,7 +193,7 @@ class Odontograma:
 
     def guardar_odontograma(self):
         self.ventana_odontograma.grab_release()
-        answer = messagebox.askokcancel('Guardar', '¿Desea guardar?', icon= 'warning', parent= self.ventana_odontograma)
+        answer = messagebox.askokcancel('Odontograma', '¿Desea guardar?', icon= 'warning', parent= self.ventana_odontograma)
         if answer:
             matricula=0
             if self.selector_odontologo.get() != 'Odontólogo':
@@ -213,8 +213,8 @@ class Odontograma:
                     messagebox.showinfo("Odontograma", "No se pudo guardar el odontograma", parent= self.ventana_odontograma)
                     self.ventana_odontograma.grab_set()
             else:
-                self.aviso_odontologo.config(text= "Escoja un odontólogo", fg= 'red')
-                messagebox.showinfo("Odontologo", "Escoja un odontólogo", parent= self.ventana_odontograma)
+                self.aviso_odontologo.config(text= "Elija un odontólogo", fg= 'red')
+                messagebox.showinfo("Odontograma", "Elija un odontólogo", parent= self.ventana_odontograma)
                 self.ventana_odontograma.grab_set()
         else:
             self.ventana_odontograma.grab_set()

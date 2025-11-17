@@ -56,7 +56,7 @@ class Calendario():
     def crear_encabezado(self, frame):
         """ Crea el encabezado """
         encabezado_texto = f"{self.dh.month_num_to_string(self.mes)} {self.anio}"
-        self.encabezado = Label(frame, text= encabezado_texto,  font= (self.fuenten, 15), justify= CENTER)
+        self.encabezado = Label(frame, text= encabezado_texto,  font= ('Arial', 15, 'bold'), justify= CENTER)
         self.encabezado.grid(row= 0, column= 0, columnspan= 7, sticky= EW, ipady= 10)
 
         dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado", "Domingo"]
