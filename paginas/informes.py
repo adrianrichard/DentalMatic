@@ -417,7 +417,6 @@ class Informes:
             self.nueva_ventana.grab_set()
 
     def create_pdf(self):
-        #name=''
         try:
             carpeta_informes = os.path.join(os.path.expanduser("."), "informes")
             if not os.path.exists(carpeta_informes):
@@ -448,7 +447,10 @@ class Informes:
             content = []
             
             # Añadir una imagen externa y mantener la relación de aspecto
-            image_path = "LOGO.png"  # Cambia "logo.png" al nombre de tu imagen
+            directorio_actual = os.path.dirname(os.path.abspath(__file__))
+            directorio_padre = os.path.dirname(directorio_actual)
+            carpeta_imagenes = os.path.join(directorio_padre, "imagenes")
+            image_path = os.path.join(carpeta_imagenes, "LOGO11.png")
             max_width = 20 * cm
             max_height = 10 * cm
             if os.path.exists(image_path):
