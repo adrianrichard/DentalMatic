@@ -258,7 +258,7 @@ class MasterPanel:
 
         self.tabla_paciente.delete(*self.tabla_paciente.get_children())
         for i in range(inicio, fin):
-            self.tabla_paciente.insert('', 'end', text= pacientes[i][0], values= pacientes[i][1:])
+            self.tabla_paciente.insert('', 'end', text= pacientes[i][0], values= pacientes[i][0:])
 
         if self.indice_paciente == 0:
             self.boton_previo.config(state= 'disabled', bg= 'gray')
