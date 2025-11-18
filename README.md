@@ -27,7 +27,7 @@ Librerías utilizadas
 - SQLite 3.21.0
 - Pillow 11.0.0
 - Reportlab 4.2.5
-- Mtplotlib 3.9.2
+- Matplotlib 3.9.2
 
 Autor
 -------------------------------

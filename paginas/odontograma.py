@@ -81,7 +81,7 @@ class Odontograma:
 
         self.boton_guardar_odonto=Button(self.frame_dientes, text= 'Guardar', command= self.guardar_odontograma, font= self.fuenteb, bg= '#1F704B', fg= 'white', width= 8)
         self.boton_guardar_odonto.grid(row= 1, column= 0, padx= 10, pady= 10)
-        self.boton_PDF=Button(self.frame_dientes, text= 'Crear PDF', command= self.crear_pdf, font= self.fuenteb, fg= 'white', bg= "gray", width= 8)
+        self.boton_PDF=Button(self.frame_dientes, text= 'Crear PDF', command= self.crear_pdf, font= self.fuenteb, fg= 'white', bg= "blue", width= 8)
         self.boton_PDF.grid(row= 1, column= 1, padx= 0)
         self.boton_salir_odonto=Button(self.frame_dientes, text= 'Salir', command= self.salir, font= self.fuenteb, fg= 'white', bg= "orange", width= 8)
         self.boton_salir_odonto.grid(row= 1, column= 2, padx= (0, 10))
