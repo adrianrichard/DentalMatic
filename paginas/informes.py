@@ -130,7 +130,7 @@ class Informes:
             else:
                 ax.bar(valoresx, valoresy, color= 'skyblue')  # Gráfico de barras
                 ax.set_title(titulo, fontsize= 8, fontweight= 'bold', pad= 10)
-                plt.xticks(rotation= 60, ha= 'right')
+                plt.xticks(rotation= 90)
             ax.set_xlabel('Meses')
             ax.set_ylabel('Cantidad de turnos')
 
@@ -147,7 +147,7 @@ class Informes:
             ax.set_xlabel('Horario')
             ax.set_ylabel('Cantidad de turnos')
             ax.set_title(titulo, fontsize= 8, fontweight= 'bold', pad= 10)
-            plt.xticks(rotation= 90, ha= 'right')
+            plt.xticks(rotation= 90)
 
         if self.informe_seleccionado == 'Horario de turnos por año':
             titulo= 'Turnos por horario en el año '+self.selector_anio.get()
@@ -160,7 +160,7 @@ class Informes:
                 valoresx = [fila[0] for fila in datos]
                 ax.bar(valoresx, valoresy, color= 'skyblue')  # Gráfico de barras
                 ax.set_title(titulo, fontsize= 8, fontweight= 'bold', pad= 10)
-                plt.xticks(rotation= 90, ha= 'right')
+                plt.xticks(rotation= 90)
             ax.set_xlabel('Horario')
             ax.set_ylabel('Cantidad de turnos')
 
@@ -175,7 +175,7 @@ class Informes:
                 valoresx = [fila[0] for fila in datos]
                 ax.bar(valoresx, valoresy, color= 'skyblue')
                 ax.set_title(titulo)
-                plt.xticks(rotation= 45, ha= 'right')
+                plt.xticks(rotation= 45)
             ax.set_xlabel('Días de la semana')
             ax.set_ylabel('Cantidad de turnos')
 
@@ -188,9 +188,10 @@ class Informes:
             else:
                 valoresy = [fila[1] for fila in datos]
                 valoresx = [fila[0] for fila in datos]
+                valoresx [3]= 'TRATAMIENTO DE\nCONDUCTO'
                 ax.bar(valoresx, valoresy, color= 'skyblue')
                 ax.set_title(titulo)
-                plt.xticks(rotation= 45, ha= 'right')
+                plt.xticks(rotation= 0, fontsize=6)
             ax.set_xlabel('Prestaciones')
             ax.set_ylabel('Cantidad')
 
@@ -208,7 +209,7 @@ class Informes:
             ax.set_xlabel('Rango etario')
             ax.set_ylabel('Cantidad de pacientes')
             ax.set_title(titulo)
-            plt.xticks(rotation= 45, ha= 'right')
+            plt.xticks(rotation= 0)
 
         plt.tight_layout()
 

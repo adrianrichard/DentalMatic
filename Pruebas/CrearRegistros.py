@@ -199,9 +199,6 @@ def generar_turnos(conn, cantidad=1000):
                 
                 turnos_generados += 1
                 intentos = 0  # Resetear intentos después de un éxito
-                
-                if turnos_generados % 100 == 0:
-                    print(f"Progreso: {turnos_generados}/{cantidad} turnos generados")
                     
             except sqlite3.IntegrityError:
                 # Turno duplicado (misma fecha y hora), continuar con siguiente intento
