@@ -21,6 +21,9 @@ Instalación
 2. Instalar librerías necesarias con Pruebas/instalacionlibrerias.py
 3. Ejecutar main.py
 
+*NOTA:* El script Pruebas/CrearRegistros.py posibilita cargar pacientes, odontólogos y turnos.
+
+Esto facilita la carga de datos para la realización de los informes.
 
 Librerías utilizadas
 ---------------------------
