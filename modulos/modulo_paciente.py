@@ -276,10 +276,6 @@ class Paciente:
             self.telefono_valido.config(text= "* Complete este campo", fg= 'red')
             self.entry_telefono.config(bg= "orange red")
             campos_vacios= False
-        if(self.email_paciente.get()==''):
-            self.email_valido_label.config(text= "* Complete este campo", fg= 'red')
-            self.entry_correo.config(bg= "orange red")
-            campos_vacios= False
         return campos_vacios    
 
     def validar_datos(self):

@@ -235,7 +235,7 @@ class Usuario:
             return
 
     def eliminar_usuario(self, nombre):
-        msg_box = messagebox.askquestion('Eliminar usuario', '¿Desea elminar al usuario?', icon= 'warning')
+        msg_box = messagebox.askquestion('Eliminar usuario', f'¿Desea elminar a {nombre}?', icon= 'warning')
         if msg_box == 'yes'and nombre != 'admin':
             try:
                 self.miCursor.execute("DELETE FROM usuarios WHERE nombre_usuario = ?", (nombre,))
