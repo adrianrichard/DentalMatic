@@ -32,7 +32,7 @@ class Odontograma:
         self.ventana_odontograma.grab_set_global() # Obliga a las ventanas estar deshabilitadas y deshabilitar todos los eventos e interacciones con la ventana
         self.ventana_odontograma.focus_set() # Mantiene el foco cuando se abre la ventana.
 
-        self.ventana_odontograma.geometry('750x500')
+        self.ventana_odontograma.geometry('780x500')
         self.ventana_odontograma.grid_columnconfigure(0, weight= 1)
         self.ventana_odontograma.configure(bg= "gray")
         utl.centrar_ventana(self.ventana_odontograma, 920, 500)
