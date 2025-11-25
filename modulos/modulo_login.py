@@ -59,7 +59,7 @@ class Login:
 
     """Sólo acepta Letras"""
     def validar_nombre(self, value):
-        pattern = r'^[A-Za-z_]+$'  #r'\b[A-Za-z_]\b'  cambiado por sugerencia de chatgpt
+        pattern = r'^[A-Za-z_]+$'
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Error", "El nombre de usuario solo puede contener letras y guiones bajos.", parent= self.frame_login)
             return False 
@@ -67,7 +67,7 @@ class Login:
 
     """Sólo acepta alfanuméricos"""
     def validar_pass(self, value):
-        pattern = r'^[A-Za-z0-9_]+$' #r'\b[A-Za-z0-9_]\b'  cambiado por sugerencia de chatgpt
+        pattern = r'^[A-Za-z0-9_]+$'
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Error", "La contraseña solo puede contener letras, números y guiones bajos.", parent= self.frame_login)
             return False
@@ -121,7 +121,7 @@ class Login:
         etiqueta_password.pack(fill= tk.X, padx= 20, pady= 5)
         self.password = ttk.Entry(frame_form_completar, textvariable= self.pass_usuario, font=(self.fuente_login, 14), validate= "key", validatecommand=(frame_form_completar.register(self.validar_pass), "%S"))
         self.password.pack(fill= tk.X, padx= 20, pady= 10)
-        self.password.bind('<Return>', (lambda event: self.verificar()))#es para apretar Intro y se ejecute, una opción a el botón
+        self.password.bind('<Return>', (lambda event: self.verificar())) #es para apretar Intro y se ejecute, una opción a el botón
         self.password.config(show= "*")
 
         inicio = tk.Button(frame_form_completar, text= "Ingresar", font= self.fuente_login2, bg= self.color_fondo1, bd= 0, fg= "white", command= self.verificar)
