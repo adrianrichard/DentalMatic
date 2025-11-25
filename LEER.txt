@@ -1,0 +1,20 @@
+PARA INSTALAR LAS LIBRERIAS NECESARIAS (ADEMÁS DE PYTHON)
+------------------------------------------------------------------
+Ejecutar el script instalacionlibrerias.py de la carpeta Pruebas
+
+
+PARA INGRESAR LA PRIMERA VEZ
+------------------------------------------------------------------
+USUARIO: admin
+CONTRASEÑA: admin
+
+
+PARA CREAR REGISTROS EN LA BASE DE DATOS
+------------------------------------------------------------------
+Ejecutar el script CrearRegistros.py de la carpeta Pruebas
+
+
+IMAGENES PARA AGREGAR EN LA GALERIA
+----------------------------------------------------------------
+dentro de la carpeta Pruebas se encuentra la carpeta imagenes radiograficas
+con imagenes para agregar a la galeria
